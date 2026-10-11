@@ -1,22 +1,15 @@
-"""Build the Chinese PDF and Markdown report exclusively from audited run outputs."""
+"""Generate LaTeX and Markdown from audited results; compile the supplied report template."""
 import json
 import os
 from pathlib import Path
-from xml.sax.saxutils import escape
+import re
+import shutil
+import subprocess
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
-from reportlab.lib import colors
-from reportlab.lib.enums import TA_CENTER
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import ParagraphStyle
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.cidfonts import UnicodeCIDFont
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, PageBreak
 
 ROOT = Path(__file__).resolve().parents[1]
 METHODS = ["binary", "frequency", "tfidf", "glove", "w2v_ag", "w2v_nyt", "bert"]
@@ -38,46 +31,104 @@ def main():
     FIGS.mkdir(parents=True, exist_ok=True)
     output = ROOT / "output" / "pdf"
     output.mkdir(parents=True, exist_ok=True)
-    font_path = os.environ.get("REPORT_FONT", "C:/Windows/Fonts/simsun.ttc")
-    if Path(font_path).exists():
-        pdfmetrics.registerFont(TTFont("Chinese", font_path, subfontIndex=0))
-    else:
-        pdfmetrics.registerFont(UnicodeCIDFont("STSong-Light"))
-    font = "Chinese" if Path(font_path).exists() else "STSong-Light"
-    body = ParagraphStyle("body", fontName=font, fontSize=10.5, leading=17,
-                          spaceAfter=8, wordWrap="CJK", textColor=colors.HexColor("#20252b"))
-    heading = ParagraphStyle("heading", parent=body, fontSize=15, leading=22, spaceBefore=8, spaceAfter=12, textColor=colors.black)
-    title = ParagraphStyle("title", parent=body, fontSize=24, leading=34, spaceAfter=18, textColor=colors.black)
-    small = ParagraphStyle("small", parent=body, fontSize=8.5, leading=12)
-    cell = ParagraphStyle("cell", parent=body, fontSize=9, leading=13, spaceAfter=0)
-    story, md = [], ["# NYT 新闻文本分类实验报告", ""]
+
+    generated = ROOT / "report" / "generated"
+    generated.mkdir(parents=True, exist_ok=True)
+    body, heading, title, small = None, "subtitle", "title", "small"
+    tex, abstract, md = [], [], ["# NYT 新闻文本分类实验报告", ""]
+    in_body = False
+    table_number = 0
+    captions = ["NYT 统一数据划分", "文本表示方法", "传统模型的验证集选择",
+                "NYT 测试集性能", "词向量 token 覆盖率", "BERT 三轮训练记录",
+                "BERT 测试集逐类指标", "排除训练集重复文本后的补充指标", "实验运行环境"]
+    def escape_tex(text):
+        chars = {"\\": r"\textbackslash{}", "&": r"\&", "%": r"\%", "$": r"\$",
+                 "#": r"\#", "_": r"\_", "{": r"\{", "}": r"\}", "~": r"\textasciitilde{}", "^": r"\textasciicircum{}"}
+        return "".join(chars.get(c, c) for c in str(text))
     def p(text, style=body):
-        story.append(Paragraph(escape(text).replace("\n", "<br/>"), style))
+        if style == title:
+            return
         md.extend([text, ""])
+        if style == heading:
+            return
+        rendered = escape_tex(text)
+        if text.startswith("两组 Word2Vec"):
+            rendered += r"\cite{mikolov2013efficient,pennington2014glove}"
+        if text.startswith("BERT 使用"):
+            rendered += r"\cite{devlin2019bert,bertmodel}"
+        if text.startswith("从仓库根目录依次运行"):
+            rendered = r"""从仓库根目录执行以下命令（需安装 TeX Live 或 MiKTeX）：
+\begin{lstlisting}[numbers=none,aboveskip=4pt,belowskip=4pt]
+uv sync --frozen --python 3.12
+uv run --frozen python scripts/run_all.py
+\end{lstlisting}
+分步说明见 \path{README.md}。报告使用 \path{report/} 中的南开大学模板，
+通过 XeLaTeX 和 BibTeX 编译；LaTeX 正文、PDF 与 Markdown 来自同一实验结果。"""
+        (tex if in_body else abstract).append(rendered + "\n")
+        if text.startswith("词袋与词向量实验"):
+            tex.append(r"""
+\begin{equation}
+\mathrm{Accuracy}=\frac{1}{N}\sum_{i=1}^{N}\mathbf{1}[\hat y_i=y_i],
+\qquad
+\mathrm{MacroF1}=\frac{1}{K}\sum_{k=1}^{K}F1_k.
+\end{equation}
+""")
+        if text.startswith("两组 Word2Vec"):
+            tex.append(r"""
+设有效词集合（保留重复出现）为 $D_{\mathrm{valid}}$，则文档表示为
+\begin{equation}
+\mathbf e(d)=\frac{1}{|D_{\mathrm{valid}}|}
+\sum_{w\in D_{\mathrm{valid}}}\mathbf e(w).
+\end{equation}
+当 $|D_{\mathrm{valid}}|=0$ 时使用零向量。
+""")
     def h(text):
-        story.append(Paragraph(escape(text), heading))
+        nonlocal in_body
+        in_body = True
+        tex.append(r"\section{" + escape_tex(re.sub(r"^[一二三四五六七八九十]+ ", "", text)) + "}\n")
         md.extend(["## " + text, ""])
     def table(rows, widths=None):
-        converted = [[Paragraph(escape(str(x)), cell) for x in row] for row in rows]
-        t = Table(converted, colWidths=widths, repeatRows=1, hAlign="LEFT")
-        t.setStyle(TableStyle([
-            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e9eef3")),
-            ("VALIGN", (0, 0), (-1, -1), "TOP"),
-            ("LEFTPADDING", (0, 0), (-1, -1), 7), ("RIGHTPADDING", (0, 0), (-1, -1), 7),
-            ("TOPPADDING", (0, 0), (-1, -1), 6), ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
-            ("LINEBELOW", (0, 0), (-1, 0), 0.6, colors.HexColor("#aab6c2")),
-            ("LINEBELOW", (0, 1), (-1, -1), 0.25, colors.HexColor("#dce2e7")),
-        ]))
-        story.extend([t, Spacer(1, 10)])
+        nonlocal table_number
+        table_number += 1
+        count = len(rows[0])
+        weights = [1.0] * count if widths is None else [w * count / sum(widths) for w in widths]
+        columns = "".join(r">{\hsize=" + f"{w:.5f}" + r"\hsize\linewidth=\hsize\raggedright\arraybackslash}X" for w in weights)
+        lines = [r"\begin{table}[H]", r"\centering\small", r"\setlength{\tabcolsep}{4pt}",
+                 r"\renewcommand{\arraystretch}{1.2}", r"\caption{" + captions[table_number-1] + "}",
+                 r"\label{tab:result" + str(table_number) + "}",
+                 r"\begin{tabularx}{\linewidth}{" + columns + "}", r"\toprule"]
+        for i,row in enumerate(rows):
+            lines.append(" & ".join(escape_tex(x) for x in row) + r" \\")
+            if i == 0:
+                lines.append(r"\midrule")
+        lines.extend([r"\bottomrule", r"\end{tabularx}", r"\end{table}", ""])
+        tex.extend(lines)
         md.append("| " + " | ".join(str(x) for x in rows[0]) + " |")
         md.append("| " + " | ".join("---" for _ in rows[0]) + " |")
         md.extend("| " + " | ".join(str(x) for x in row) + " |" for row in rows[1:])
         md.append("")
+        if table_number == 2:
+            tex.append(r"""
+设 $c_{d,i}$ 为词 $i$ 在文档 $d$ 中的次数，三种词袋表示分别为
+\begin{align}
+x^{\mathrm{binary}}_{d,i}&=\mathbf{1}[c_{d,i}>0],\\
+x^{\mathrm{count}}_{d,i}&=c_{d,i},\\
+x^{\mathrm{tfidf}}_{d,i}&=c_{d,i}\left[\log\frac{1+N_{\mathrm{train}}}{1+df_i}+1\right].
+\end{align}
+其中 $df_i$ 仅在训练集统计；TF-IDF 向量随后进行 $L_2$ 归一化。
+""")
     def fig(name, width, height):
-        story.append(Image(str(FIGS / name), width=width, height=height))
-        md.extend([f"![{name}](figures/{name})", ""])
+        caption = {"comparison.png": "七种方法的统一测试集性能",
+                   "bert_history.png": "BERT 三轮训练损失与验证 Macro-F1",
+                   "bert_confusion.png": "BERT 测试集混淆矩阵"}[name]
+        scale = "0.74" if name == "bert_confusion.png" else "0.98"
+        tex.extend([r"\begin{figure}[H]", r"\centering",
+                    r"\includegraphics[width=" + scale + r"\linewidth]{" + name + "}",
+                    r"\caption{" + caption + "}", r"\end{figure}", ""])
+        md.extend([f"![{caption}](figures/{name})", ""])
     def page():
-        story.append(PageBreak())
+        # Let LaTeX paginate flowing report sections instead of forcing sparse pages.
+        tex.append("")
 
     plt.rcParams.update({"font.size": 10, "axes.spines.top": False, "axes.spines.right": False})
     fig1, ax = plt.subplots(figsize=(8.6, 3.5))
@@ -195,10 +246,10 @@ def main():
     h("六 复现与结论")
     p(f"本次训练环境：Python {data['bert']['environment']['python']}；GPU 为 {data['bert']['details']['gpu']}。所有结果使用同一保存划分，并通过逐条预测重算核验。")
     table([["依赖", "实际版本"]] + [[k, v] for k, v in data["bert"]["environment"]["packages"].items()], [245, 240])
-    p("从仓库根目录依次运行：uv sync --frozen --python 3.12；uv run --frozen python scripts/run_all.py。分步命令、CPU 选项、网络设置和文件结构详见 README.md。PDF 和 Markdown 由同一结果文件生成。")
+    p("从仓库根目录依次运行：uv sync --frozen --python 3.12；uv run --frozen python scripts/run_all.py。分步命令、CPU 选项、网络设置和文件结构详见 README.md。LaTeX 正文、PDF 和 Markdown 由同一结果文件生成；PDF 使用 report 目录中的南开大学报告模板，通过 XeLaTeX 与 BibTeX 编译。")
     p("可复核证据：results/split.json 保存划分与源文件 SHA-256；各方法 JSON 保存参数、验证和测试指标、混淆矩阵；*_predictions.csv 保存原始行号、真实标签和预测标签；audit.json 保存独立指标核验及重复文本敏感性结果。预训练资源来源和 SHA-256 记录在 assets.json。")
     p(f"本次比较中，{NAMES[best]} 达到最高测试 Macro-F1。结论仅适用于本数据、当前划分和给定超参数。未覆盖多随机种子、近重复去重和长文本 BERT 对照；这些是后续完善实验的方向，不作为本报告已经完成的实验。")
-    h("参考资料")
+    md.extend(["## 参考资料", ""])
     references = [
         "1. Stanford GloVe 项目与 glove.6B 预训练向量：https://nlp.stanford.edu/projects/glove/",
         "2. Mikolov 等，Efficient Estimation of Word Representations in Vector Space，2013：https://arxiv.org/abs/1301.3781",
@@ -207,16 +258,31 @@ def main():
         "5. 数据与任务定义：仓库内 HW-1/nyt.csv、HW-1/ag.csv 及 作业一要求.docx。"
     ]
     for ref in references:
-        p(ref, small)
-    def footer(canvas, doc):
-        canvas.setFont(font, 8)
-        canvas.setFillColor(colors.HexColor("#69727c"))
-        canvas.drawString(48, 27, "NYT 新闻文本分类实验")
-        canvas.drawRightString(A4[0] - 48, 27, f"{doc.page}")
-    doc = SimpleDocTemplate(str(output / "report.pdf"), pagesize=A4, leftMargin=48, rightMargin=48,
-                            topMargin=42, bottomMargin=44, title="NYT 新闻文本分类实验报告", author="")
-    doc.build(story, onFirstPage=footer, onLaterPages=footer)
-    (DOCS / "report.md").write_text("\n".join(md), encoding="utf-8")
+        md.extend([ref, ""])
+    tex.extend([r"\clearpage", r"\addcontentsline{toc}{section}{参考文献}",
+                r"\bibliographystyle{plain}", r"\bibliography{references}"])
+    (generated / "abstract.tex").write_text("\n".join(abstract), encoding="utf-8", newline="\n")
+    (generated / "body.tex").write_text("\n".join(tex), encoding="utf-8", newline="\n")
+    (DOCS / "report.md").write_text("\n".join(md), encoding="utf-8", newline="\n")
+    compiler = shutil.which("latexmk")
+    if not compiler:
+        raise RuntimeError("Install TeX Live/MiKTeX with XeLaTeX, BibTeX and latexmk, then rerun.")
+    build = ROOT / "tmp" / "latex"
+    build.mkdir(parents=True, exist_ok=True)
+    command = [compiler, "-xelatex", "-interaction=nonstopmode", "-halt-on-error",
+               "-file-line-error", "-outdir=" + str(build), "main.tex"]
+    completed = subprocess.run(command, cwd=ROOT / "report", stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT, encoding="utf-8", errors="replace")
+    (build / "build.log").write_text(completed.stdout, encoding="utf-8")
+    if completed.returncode:
+        raise RuntimeError("LaTeX compilation failed. See tmp/latex/build.log\n" + completed.stdout[-4000:])
+    log = (build / "main.log").read_text(encoding="utf-8", errors="replace")
+    problems = [line for line in log.splitlines() if
+                "Overfull" in line or "Missing character:" in line
+                or "undefined references" in line or ("Citation" in line and "undefined" in line)]
+    if problems:
+        raise RuntimeError("LaTeX layout/reference checks failed:\n" + "\n".join(problems))
+    shutil.copy2(build / "main.pdf", output / "report.pdf")
     print(output / "report.pdf")
 
 

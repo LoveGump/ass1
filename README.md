@@ -4,7 +4,8 @@
 
 ## 提交内容
 
-- `output/pdf/report.pdf`：中文实验报告（由真实运行结果生成）。
+- `output/pdf/report.pdf`：使用南开大学 report 模板编译的中文 LaTeX 实验报告。
+- `report/main.tex`、`report/generated/`、`report/references.bib`：完整 LaTeX 源码、实验正文和 BibTeX 参考文献。
 - `src/`：数据处理、传统模型、BERT 完整实现。
 - `results/`：固定划分、数据统计、实验参数、Accuracy / Macro-F1、混淆矩阵和逐条预测。
 - `docs/report.md`：可直接在 GitHub 阅读的报告。
@@ -31,7 +32,7 @@
 
 ## 环境安装
 
-需要 Python 3.12、[uv](https://docs.astral.sh/uv/)、Git 和 curl。Windows / Linux 默认安装 CUDA 12.4 的 PyTorch 2.6.0，适用于支持该版本的 NVIDIA 驱动；没有 GPU 时代码自动使用 CPU，但 BERT 会慢得多。macOS 使用其平台对应的 PyTorch 包。
+需要 Python 3.12、[uv](https://docs.astral.sh/uv/)、Git 和 curl。生成 PDF 还需要 TeX Live 或 MiKTeX，并确保 `xelatex`、`bibtex` 和 `latexmk` 可用。Windows / Linux 默认安装 CUDA 12.4 的 PyTorch 2.6.0，适用于支持该版本的 NVIDIA 驱动；没有 GPU 时代码自动使用 CPU，但 BERT 会慢得多。macOS 使用其平台对应的 PyTorch 包。
 
 ```powershell
 git clone https://github.com/LoveGump/ass1.git
@@ -109,16 +110,37 @@ src/classical.py            六组传统实验
 src/bert.py                 BERT 三轮微调
 scripts/download_assets.py  下载与校验
 scripts/audit_results.py    从逐条预测重算全部指标
-scripts/build_report.py     从结果生成 PDF、图表和 Markdown
+scripts/build_report.py     从结果生成 LaTeX、图表、Markdown 并编译 PDF
 scripts/run_all.py          完整流程
 tests/test_pipeline.py      关键行为测试
 results/                    可审计实验结果
-docs/                       报告与图表
+docs/                       Markdown 报告与图表
+report/                     南开大学 LaTeX 模板、正文、校徽和参考文献
 output/pdf/report.pdf       最终 PDF
 artifacts/                  本地模型及下载文件（不入 Git）
 ```
 
-报告生成使用 ReportLab；Windows 默认嵌入宋体，其他系统自动使用 ReportLab 内置中文 CID 字体，也可通过 `REPORT_FONT` 指定中文 TTF / TTC 字体路径。无需 LaTeX 或 Word。
+## LaTeX 报告编译
+
+报告沿用用户提供的 `report/` 模板（原模板采用 `ctexart`）：保留南开大学封面、学院标题、目录、中文章节编号、页眉页脚和浅色 NKU 水印。删除模板中与本作业无关的示例姓名、年级和教师信息；可以直接在 `report/main.tex` 中补充封面信息。
+
+从已经保存的真实结果重新生成报告，无需重新训练：
+
+```powershell
+uv run --frozen python scripts/build_report.py
+```
+
+此命令生成 `report/generated/abstract.tex`、`report/generated/body.tex` 和 Markdown 报告，再调用 XeLaTeX/BibTeX 编译，检查引用与排版警告，最后更新 `output/pdf/report.pdf`。中间文件和编译日志位于 `tmp/latex/`。
+
+仅编辑 LaTeX 内容后编译（保留手工修改，不重新生成正文）：
+
+```powershell
+cd report
+latexmk -xelatex -interaction=nonstopmode -halt-on-error -file-line-error -outdir=../tmp/latex main.tex
+```
+
+上述手动编译产物为 `tmp/latex/main.pdf`；可复制到 `output/pdf/report.pdf` 作为提交版本。`report/generated/body.tex` 是可独立编辑的完整正文；重新运行生成脚本会根据实验 JSON 覆盖它。参考文献在 `report/references.bib` 维护。字体优先使用模板的 Noto，Windows 回退到宋体，其他平台回退到 TeX Live 的 Fandol。无需 ReportLab 或 Word。
+
 
 ## 参考
 

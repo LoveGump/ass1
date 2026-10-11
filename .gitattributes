@@ -6,3 +6,5 @@
 *.pdf binary
 *.docx binary
 HW-1/*.csv -text -diff
+*.tex text eol=lf
+*.bib text eol=lf

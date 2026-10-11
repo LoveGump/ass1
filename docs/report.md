@@ -1,7 +1,5 @@
 # NYT 新闻文本分类实验报告
 
-NYT 新闻文本分类实验报告
-
 作业一  |  词袋表示、词向量与 BERT 微调
 
 本实验使用同一 NYT 测试集比较七种方法。此次单次实验中，TF-IDF 的测试 Macro-F1 最高，为 0.9812，Accuracy 为 0.9922。全部结果来自实际训练；每条测试预测、划分行号和运行参数均随仓库保存。
@@ -62,7 +60,7 @@ BERT 使用 google-bert/bert-base-uncased，全参数微调。max_length=64（�
 | Word2Vec NYT | 0.9896 | 0.9731 | 224.3 |
 | BERT | 0.9809 | 0.9589 | 218.8 |
 
-![comparison.png](figures/comparison.png)
+![七种方法的统一测试集性能](figures/comparison.png)
 
 运行时间包括各方法特征构建、训练、验证和预测等步骤，不含预训练资源下载。部分任务并行运行，且硬件与模型结构不同，因此时间仅描述本次运行，不作为严格速度基准。
 
@@ -86,7 +84,7 @@ AG Word2Vec 与 NYT Word2Vec 的测试 Macro-F1 分别为 0.9581 和 0.9731。�
 | 2 | 0.0506 | 0.9433 |
 | 3 | 0.0179 | 0.9480 |
 
-![bert_history.png](figures/bert_history.png)
+![BERT 三轮训练损失与验证 Macro-F1](figures/bert_history.png)
 
 BERT 完成三轮训练后，依据验证 Macro-F1 选取第 3 轮 checkpoint。测试集不参与轮次选择。完整曲线数据保存在 results/bert_history.json。
 
@@ -94,7 +92,7 @@ BERT 完成三轮训练后，依据验证 Macro-F1 选取第 3 轮 checkpoint。
 
 ## 五 分类误差与重复文本审计
 
-![bert_confusion.png](figures/bert_confusion.png)
+![BERT 测试集混淆矩阵](figures/bert_confusion.png)
 
 | 类别 | Precision | Recall | F1 | 样本数 |
 | --- | --- | --- | --- | --- |
@@ -129,7 +127,7 @@ BERT 完成三轮训练后，依据验证 Macro-F1 选取第 3 轮 checkpoint。
 | torch | 2.6.0+cu124 |
 | transformers | 4.51.3 |
 
-从仓库根目录依次运行：uv sync --frozen --python 3.12；uv run --frozen python scripts/run_all.py。分步命令、CPU 选项、网络设置和文件结构详见 README.md。PDF 和 Markdown 由同一结果文件生成。
+从仓库根目录依次运行：uv sync --frozen --python 3.12；uv run --frozen python scripts/run_all.py。分步命令、CPU 选项、网络设置和文件结构详见 README.md。LaTeX 正文、PDF 和 Markdown 由同一结果文件生成；PDF 使用 report 目录中的南开大学报告模板，通过 XeLaTeX 与 BibTeX 编译。
 
 可复核证据：results/split.json 保存划分与源文件 SHA-256；各方法 JSON 保存参数、验证和测试指标、混淆矩阵；*_predictions.csv 保存原始行号、真实标签和预测标签；audit.json 保存独立指标核验及重复文本敏感性结果。预训练资源来源和 SHA-256 记录在 assets.json。
 

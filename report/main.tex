@@ -1,0 +1,86 @@
+% -*- coding: utf-8 -*-
+% 基于用户提供的 report/main.tex（designed by zcf）调整。
+% XeLaTeX 编译；实验正文和表格由 scripts/build_report.py 生成。
+\documentclass[UTF8,a4paper,10pt,fontset=fandol]{ctexart}
+\usepackage[left=3.17cm,right=3.17cm,top=2.74cm,bottom=2.74cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx,float,booktabs,tabularx,array}
+\usepackage{caption,cite,enumitem}
+\usepackage{xcolor,listings,fancyhdr,tikz,eso-pic}
+\usepackage{xurl}
+\usepackage[colorlinks,linkcolor=black,citecolor=black,urlcolor=blue!55!black]{hyperref}
+\graphicspath{{../docs/figures/}{./}}
+% 优先沿用模板的 Noto 字体；Windows 使用宋体，其他环境回退到 TeX Live 的 Fandol。
+\IfFontExistsTF{Noto Serif CJK SC}{
+  \setCJKmainfont[AutoFakeBold=2,AutoFakeSlant=0.15]{Noto Serif CJK SC}
+}{
+  \IfFontExistsTF{SimSun}{
+    \setCJKmainfont[BoldFont=SimHei,ItalicFont=KaiTi]{SimSun}
+    \setCJKsansfont{SimHei}
+    \setCJKfamilyfont{zhkai}[AutoFakeBold=2]{KaiTi}
+  }{}
+}
+\newcommand{\yihao}{\fontsize{26pt}{36pt}\selectfont}
+\newcommand{\erhao}{\fontsize{22pt}{28pt}\selectfont}
+\newcommand{\xiaoer}{\fontsize{18pt}{24pt}\selectfont}
+\newcommand{\sanhao}{\fontsize{16pt}{24pt}\selectfont}
+\newcommand{\sihao}{\fontsize{14pt}{21pt}\selectfont}
+\newcommand{\xiaosi}{\fontsize{12pt}{18pt}\selectfont}
+\newcommand{\wuhao}{\fontsize{10.5pt}{15.75pt}\selectfont}
+\ctexset{
+  section={name={,、},number=\chinese{section},format=\large\bfseries\raggedright},
+  subsection={name={（,）},number=\chinese{subsection},format=\normalsize\bfseries\raggedright},
+  subsubsection={name={,.},number=\arabic{subsubsection}}
+}
+\setlength{\headheight}{16pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\kaishu\nouppercase{\leftmark}}
+\fancyhead[R]{\small\kaishu 文本分类实验报告}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.1pt}
+\renewcommand{\footrulewidth}{0pt}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\captionsetup{font=small,labelfont=bf}
+\setlength{\parskip}{0.3em}
+\setlength{\emergencystretch}{2em}
+\raggedbottom
+\lstset{basicstyle=\small\ttfamily,breaklines=true,frame=single,numbers=left,numberstyle=\tiny}
+\newcommand{\watermark}{%
+  \AddToShipoutPictureBG{%
+    \begin{tikzpicture}[remember picture,overlay]
+      \node[rotate=60,scale=10,text=black!4] at (current page.center) {NKU};
+    \end{tikzpicture}}}
+\hypersetup{pdftitle={NYT 新闻文本分类实验报告},pdfsubject={作业一 词袋表示 词向量与 BERT 微调}}
+\begin{document}
+\begin{titlepage}
+  \begin{center}
+    \includegraphics[width=0.8\textwidth]{NKU.png}\\[0.8cm]
+    {\Huge\kaishu\bfseries 南\quad 开\quad 大\quad 学}\\[0.7cm]
+    {\huge\kaishu\bfseries 计\quad 算\quad 机\quad 学\quad 院}\\[0.7cm]
+    {\Large\bfseries 作业一实验报告}\\[0.7cm]
+    \HRule\\[0.7cm]
+    {\LARGE\bfseries NYT 新闻文本分类}\\[0.35cm]
+    {\large 词袋表示、词向量与 BERT 微调}\\[0.5cm]
+    \HRule\\[1.3cm]
+    {\large 数据集：NYT 与 AG News}\\[0.4cm]
+    {\large 实验内容：七组文本分类方法对比}\\[0.4cm]
+    {\large 评价指标：Accuracy 与 Macro-F1}
+    \vfill
+    {\Large\today}
+  \end{center}
+\end{titlepage}
+\pagenumbering{Roman}
+\thispagestyle{plain}
+\renewcommand{\abstractname}{\kaishu\sihao\textbf{摘要}}
+\begin{abstract}
+  \input{generated/abstract.tex}
+  \par\medskip\noindent\textbf{关键词：}文本分类；词袋模型；Word2Vec；GloVe；BERT
+\end{abstract}
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
+\watermark
+\wuhao
+\input{generated/body.tex}
+\end{document}
