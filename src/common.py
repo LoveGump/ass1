@@ -6,6 +6,7 @@ import importlib.metadata
 import json
 import platform
 import re
+import zlib
 from pathlib import Path
 
 import numpy as np
@@ -18,6 +19,10 @@ RESULTS = ROOT / "results"
 ARTIFACTS = ROOT / "artifacts"
 SEED = 42
 TOKEN_RE = re.compile(r"[a-z]+(?:'[a-z]+)?")
+
+
+def stable_hash(value):
+    return zlib.crc32(value.encode("utf-8"))
 
 
 def tokenize(text):
@@ -36,7 +41,7 @@ def write_json(path, data):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     temp = path.with_suffix(path.suffix + ".tmp")
-    temp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    temp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8", newline="\n")
     temp.replace(path)
 
 

@@ -1,0 +1,170 @@
+{
+  "method": "bert",
+  "seed": 42,
+  "labels": [
+    "business",
+    "politics",
+    "sports"
+  ],
+  "source_sha256": "de12ebe7f41316b798896bf975da840e2998f82393328d375fe5456a14e9eb2d",
+  "split_sha256": "1262ec2c68c75e17185930e0b8ee92d5521212dc2e804f460eb9d33312dc1dc4",
+  "validation": {
+    "accuracy": 0.9756944444444444,
+    "macro_f1": 0.9479791130962777,
+    "classification_report": {
+      "business": {
+        "precision": 0.9115646258503401,
+        "recall": 0.9370629370629371,
+        "f1-score": 0.9241379310344827,
+        "support": 143.0
+      },
+      "politics": {
+        "precision": 0.9305555555555556,
+        "recall": 0.9241379310344827,
+        "f1-score": 0.9273356401384083,
+        "support": 145.0
+      },
+      "sports": {
+        "precision": 0.9941927990708479,
+        "recall": 0.9907407407407407,
+        "f1-score": 0.9924637681159421,
+        "support": 864.0
+      },
+      "accuracy": 0.9756944444444444,
+      "macro avg": {
+        "precision": 0.9454376601589146,
+        "recall": 0.9506472029460534,
+        "f1-score": 0.9479791130962777,
+        "support": 1152.0
+      },
+      "weighted avg": {
+        "precision": 0.9759261071609087,
+        "recall": 0.9756944444444444,
+        "f1-score": 0.9757847982727207,
+        "support": 1152.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        134,
+        6,
+        3
+      ],
+      [
+        9,
+        134,
+        2
+      ],
+      [
+        4,
+        4,
+        856
+      ]
+    ]
+  },
+  "test": {
+    "accuracy": 0.9809027777777778,
+    "macro_f1": 0.9588859525929618,
+    "classification_report": {
+      "business": {
+        "precision": 0.9084967320261438,
+        "recall": 0.972027972027972,
+        "f1-score": 0.9391891891891891,
+        "support": 143.0
+      },
+      "politics": {
+        "precision": 0.9708029197080292,
+        "recall": 0.9172413793103448,
+        "f1-score": 0.9432624113475178,
+        "support": 145.0
+      },
+      "sports": {
+        "precision": 0.9953596287703016,
+        "recall": 0.9930555555555556,
+        "f1-score": 0.9942062572421785,
+        "support": 864.0
+      },
+      "accuracy": 0.9809027777777778,
+      "macro avg": {
+        "precision": 0.9582197601681582,
+        "recall": 0.9607749689646242,
+        "f1-score": 0.9588859525929618,
+        "support": 1152.0
+      },
+      "weighted avg": {
+        "precision": 0.9814862632768606,
+        "recall": 0.9809027777777778,
+        "f1-score": 0.9809646787818459,
+        "support": 1152.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        139,
+        3,
+        1
+      ],
+      [
+        9,
+        133,
+        3
+      ],
+      [
+        5,
+        1,
+        858
+      ]
+    ]
+  },
+  "details": {
+    "model_id": "google-bert/bert-base-uncased",
+    "revision": "86b5e0934494bd15c9632b12f734a8a67f723594",
+    "max_length": 64,
+    "epochs": 3,
+    "batch_size": 16,
+    "gradient_accumulation_steps": 2,
+    "learning_rate": 2e-05,
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.1,
+    "gradient_clip": 1.0,
+    "best_epoch": 3,
+    "history": [
+      {
+        "epoch": 1,
+        "train_loss": 0.2847078744571189,
+        "validation_macro_f1": 0.9172994479680526,
+        "elapsed_seconds": 93.58332240000163
+      },
+      {
+        "epoch": 2,
+        "train_loss": 0.05058712894930765,
+        "validation_macro_f1": 0.9433054358987137,
+        "elapsed_seconds": 152.84313259999908
+      },
+      {
+        "epoch": 3,
+        "train_loss": 0.017866405377447974,
+        "validation_macro_f1": 0.9479791130962777,
+        "elapsed_seconds": 212.34855219999736
+      }
+    ],
+    "device": "cuda",
+    "amp_fp16": true,
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "seconds": 218.84448590000102,
+    "selection": "highest validation Macro-F1; ties prefer earlier epoch",
+    "trainable_parameters": 109484547
+  },
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.2.6",
+      "pandas": "2.2.3",
+      "scikit-learn": "1.6.1",
+      "gensim": "4.4.0",
+      "torch": "2.6.0+cu124",
+      "transformers": "4.51.3"
+    }
+  }
+}

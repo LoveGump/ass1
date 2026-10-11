@@ -1,0 +1,41 @@
+{
+  "rows": 11519,
+  "labels": [
+    "business",
+    "politics",
+    "sports"
+  ],
+  "seed": 42,
+  "source_sha256": "de12ebe7f41316b798896bf975da840e2998f82393328d375fe5456a14e9eb2d",
+  "duplicate_rows": 72,
+  "split_counts": {
+    "train": {
+      "sports": 6911,
+      "politics": 1161,
+      "business": 1143
+    },
+    "validation": {
+      "sports": 864,
+      "politics": 145,
+      "business": 143
+    },
+    "test": {
+      "sports": 864,
+      "politics": 145,
+      "business": 143
+    }
+  },
+  "split_sizes": {
+    "train": 9215,
+    "validation": 1152,
+    "test": 1152
+  },
+  "identical_text_overlap": {
+    "train/validation": 14,
+    "train/test": 10,
+    "validation/test": 1
+  },
+  "ag_rows": 90000,
+  "ag_sha256": "06fa7de72a2f1cb41513c35260964518d029ff63ae631a807d3b189fbf246c4b",
+  "ag_nyt_exact_text_overlap": 0
+}

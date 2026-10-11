@@ -1,0 +1,177 @@
+{
+  "method": "glove",
+  "seed": 42,
+  "labels": [
+    "business",
+    "politics",
+    "sports"
+  ],
+  "source_sha256": "de12ebe7f41316b798896bf975da840e2998f82393328d375fe5456a14e9eb2d",
+  "split_sha256": "1262ec2c68c75e17185930e0b8ee92d5521212dc2e804f460eb9d33312dc1dc4",
+  "validation": {
+    "accuracy": 0.9782986111111112,
+    "macro_f1": 0.9522736253903981,
+    "classification_report": {
+      "business": {
+        "precision": 0.9428571428571428,
+        "recall": 0.9230769230769231,
+        "f1-score": 0.9328621908127208,
+        "support": 143.0
+      },
+      "politics": {
+        "precision": 0.9025974025974026,
+        "recall": 0.9586206896551724,
+        "f1-score": 0.9297658862876255,
+        "support": 145.0
+      },
+      "sports": {
+        "precision": 0.9976689976689976,
+        "recall": 0.9907407407407407,
+        "f1-score": 0.9941927990708479,
+        "support": 864.0
+      },
+      "accuracy": 0.9782986111111112,
+      "macro avg": {
+        "precision": 0.9477078477078477,
+        "recall": 0.9574794511576122,
+        "f1-score": 0.9522736253903981,
+        "support": 1152.0
+      },
+      "weighted avg": {
+        "precision": 0.9788986187423687,
+        "recall": 0.9782986111111112,
+        "f1-score": 0.9784704211763346,
+        "support": 1152.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        132,
+        10,
+        1
+      ],
+      [
+        5,
+        139,
+        1
+      ],
+      [
+        3,
+        5,
+        856
+      ]
+    ]
+  },
+  "test": {
+    "accuracy": 0.9878472222222222,
+    "macro_f1": 0.9715458400659699,
+    "classification_report": {
+      "business": {
+        "precision": 0.9452054794520548,
+        "recall": 0.965034965034965,
+        "f1-score": 0.9550173010380623,
+        "support": 143.0
+      },
+      "politics": {
+        "precision": 0.9652777777777778,
+        "recall": 0.9586206896551724,
+        "f1-score": 0.9619377162629758,
+        "support": 145.0
+      },
+      "sports": {
+        "precision": 0.9988399071925754,
+        "recall": 0.9965277777777778,
+        "f1-score": 0.9976825028968713,
+        "support": 864.0
+      },
+      "accuracy": 0.9878472222222222,
+      "macro avg": {
+        "precision": 0.9697743881408027,
+        "recall": 0.973394477489305,
+        "f1-score": 0.9715458400659699,
+        "support": 1152.0
+      },
+      "weighted avg": {
+        "precision": 0.9879577614182351,
+        "recall": 0.9878472222222222,
+        "f1-score": 0.9878872616401659,
+        "support": 1152.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        138,
+        4,
+        1
+      ],
+      [
+        6,
+        139,
+        0
+      ],
+      [
+        2,
+        1,
+        861
+      ]
+    ]
+  },
+  "details": {
+    "selection": "highest validation Macro-F1; ties prefer lower C",
+    "fit_scope": "NYT train only",
+    "embedding_source": "Stanford glove.6B.100d",
+    "embedding_sha256": "95dde4dfd627ab26608d33e76d1195ec059734bd29089ea52cadb08d07c64544",
+    "coverage": {
+      "train": {
+        "tokens": 5887071,
+        "covered_tokens": 5777049,
+        "coverage": 0.9813112496859644,
+        "empty_documents": 0
+      },
+      "validation": {
+        "tokens": 732481,
+        "covered_tokens": 718512,
+        "coverage": 0.9809291981635019,
+        "empty_documents": 0
+      },
+      "test": {
+        "tokens": 751971,
+        "covered_tokens": 737815,
+        "coverage": 0.9811748059433143,
+        "empty_documents": 0
+      }
+    },
+    "dimensions": 100,
+    "C_candidates": [
+      {
+        "C": 0.1,
+        "validation_macro_f1": 0.9522736253903981,
+        "iterations": 51
+      },
+      {
+        "C": 1.0,
+        "validation_macro_f1": 0.9455739874775478,
+        "iterations": 71
+      },
+      {
+        "C": 10.0,
+        "validation_macro_f1": 0.9407661388833833,
+        "iterations": 115
+      }
+    ],
+    "selected_C": 0.1,
+    "seconds": 11.682249999998021
+  },
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.2.6",
+      "pandas": "2.2.3",
+      "scikit-learn": "1.6.1",
+      "gensim": "4.4.0",
+      "torch": "2.6.0+cu124",
+      "transformers": "4.51.3"
+    }
+  }
+}

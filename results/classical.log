@@ -1,0 +1,28 @@
+binary {"accuracy": 0.9904513888888888, "macro_f1": 0.9754474603839395}
+frequency {"accuracy": 0.9887152777777778, "macro_f1": 0.9738108994326212}
+tfidf {"accuracy": 0.9921875, "macro_f1": 0.9811743908314835}
+glove {"accuracy": 0.9878472222222222, "macro_f1": 0.9715458400659699}
+Training w2v_ag: 90000 documents
+w2v_ag: epoch 1/10 complete
+w2v_ag: epoch 2/10 complete
+w2v_ag: epoch 3/10 complete
+w2v_ag: epoch 4/10 complete
+w2v_ag: epoch 5/10 complete
+w2v_ag: epoch 6/10 complete
+w2v_ag: epoch 7/10 complete
+w2v_ag: epoch 8/10 complete
+w2v_ag: epoch 9/10 complete
+w2v_ag: epoch 10/10 complete
+w2v_ag {"accuracy": 0.9835069444444444, "macro_f1": 0.9580907619770649}
+Training w2v_nyt: 9215 documents
+w2v_nyt: epoch 1/10 complete
+w2v_nyt: epoch 2/10 complete
+w2v_nyt: epoch 3/10 complete
+w2v_nyt: epoch 4/10 complete
+w2v_nyt: epoch 5/10 complete
+w2v_nyt: epoch 6/10 complete
+w2v_nyt: epoch 7/10 complete
+w2v_nyt: epoch 8/10 complete
+w2v_nyt: epoch 9/10 complete
+w2v_nyt: epoch 10/10 complete
+w2v_nyt {"accuracy": 0.9895833333333334, "macro_f1": 0.9731424794005026}

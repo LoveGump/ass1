@@ -13,6 +13,22 @@
 
 任务要求中 Task 1 总述为“三种”，但只列出 Binary Bag of Words 和 Word Frequency。本仓库完成两项明确要求，并将 **TF-IDF 作为补充第三项**；没有将其误写为原文明确列出的内容。
 
+## 实测结果
+
+全部使用同一份 1,152 条 NYT 测试集；BERT 已完整微调 3 轮，max_length=64。七组指标均通过逐条预测重算审计，5 项关键测试通过。
+
+| 方法 | Accuracy | Macro-F1 |
+| --- | ---: | ---: |
+| Binary BoW | 0.9905 | 0.9754 |
+| Word Frequency | 0.9887 | 0.9738 |
+| TF-IDF | 0.9922 | 0.9812 |
+| GloVe 100d | 0.9878 | 0.9715 |
+| Word2Vec AG 100d | 0.9835 | 0.9581 |
+| Word2Vec NYT 100d | 0.9896 | 0.9731 |
+| BERT | 0.9809 | 0.9589 |
+
+[PDF 实验报告](output/pdf/report.pdf) · [在线阅读报告](docs/report.md) · [完整数值](results/summary.csv)
+
 ## 环境安装
 
 需要 Python 3.12、[uv](https://docs.astral.sh/uv/)、Git 和 curl。Windows / Linux 默认安装 CUDA 12.4 的 PyTorch 2.6.0，适用于支持该版本的 NVIDIA 驱动；没有 GPU 时代码自动使用 CPU，但 BERT 会慢得多。macOS 使用其平台对应的 PyTorch 包。
@@ -61,6 +77,17 @@ uv run --frozen python scripts/build_report.py
 ```
 
 默认下载 Stanford 官方 glove.6B.zip，检查文件长度和解压 CRC，只提取 glove.6B.100d.txt，并记录 SHA-256。也支持通过下载器 --glove-source gensim 获取其无损格式转换版并检查官方公布的 MD5；使用时将 --glove 指向该 .gz 文件。两者均为 400,000 个词、100 维，来源为 Wikipedia 2014 + Gigaword 5（6B tokens）。BERT 固定版本为 86b5e0934494bd15c9632b12f734a8a67f723594，下载器验证权重 SHA-256。
+
+## 使用已训练模型预测
+
+训练后可直接对一条新闻预测类别（仅加载本仓库自己生成的模型文件）：
+
+```powershell
+uv run --frozen python -m src.predict --method tfidf --text "The team won the football championship after a dramatic final."
+uv run --frozen python -m src.predict --method bert --text "The senator announced a new election campaign."
+```
+
+七种方法均支持 --method；BERT 的此单条预测入口使用 CPU，训练入口仍自动使用可用 GPU。
 
 ## 实验约定
 

@@ -1,0 +1,155 @@
+{
+  "method": "tfidf",
+  "seed": 42,
+  "labels": [
+    "business",
+    "politics",
+    "sports"
+  ],
+  "source_sha256": "de12ebe7f41316b798896bf975da840e2998f82393328d375fe5456a14e9eb2d",
+  "split_sha256": "1262ec2c68c75e17185930e0b8ee92d5521212dc2e804f460eb9d33312dc1dc4",
+  "validation": {
+    "accuracy": 0.984375,
+    "macro_f1": 0.9639496659251933,
+    "classification_report": {
+      "business": {
+        "precision": 0.9568345323741008,
+        "recall": 0.9300699300699301,
+        "f1-score": 0.9432624113475178,
+        "support": 143.0
+      },
+      "politics": {
+        "precision": 0.9455782312925171,
+        "recall": 0.9586206896551724,
+        "f1-score": 0.952054794520548,
+        "support": 145.0
+      },
+      "sports": {
+        "precision": 0.9953810623556582,
+        "recall": 0.9976851851851852,
+        "f1-score": 0.9965317919075144,
+        "support": 864.0
+      },
+      "accuracy": 0.984375,
+      "macro avg": {
+        "precision": 0.9659312753407586,
+        "recall": 0.9621252683034293,
+        "f1-score": 0.9639496659251933,
+        "support": 1152.0
+      },
+      "weighted avg": {
+        "precision": 0.9843276211303819,
+        "recall": 0.984375,
+        "f1-score": 0.9843211269412038,
+        "support": 1152.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        133,
+        8,
+        2
+      ],
+      [
+        4,
+        139,
+        2
+      ],
+      [
+        2,
+        0,
+        862
+      ]
+    ]
+  },
+  "test": {
+    "accuracy": 0.9921875,
+    "macro_f1": 0.9811743908314835,
+    "classification_report": {
+      "business": {
+        "precision": 0.9527027027027027,
+        "recall": 0.986013986013986,
+        "f1-score": 0.9690721649484536,
+        "support": 143.0
+      },
+      "politics": {
+        "precision": 0.9859154929577465,
+        "recall": 0.9655172413793104,
+        "f1-score": 0.975609756097561,
+        "support": 145.0
+      },
+      "sports": {
+        "precision": 1.0,
+        "recall": 0.9976851851851852,
+        "f1-score": 0.9988412514484357,
+        "support": 864.0
+      },
+      "accuracy": 0.9921875,
+      "macro avg": {
+        "precision": 0.979539398553483,
+        "recall": 0.9830721375261605,
+        "f1-score": 0.9811743908314835,
+        "support": 1152.0
+      },
+      "weighted avg": {
+        "precision": 0.9923561050046525,
+        "recall": 0.9921875,
+        "f1-score": 0.9922218537093954,
+        "support": 1152.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        141,
+        2,
+        0
+      ],
+      [
+        5,
+        140,
+        0
+      ],
+      [
+        2,
+        0,
+        862
+      ]
+    ]
+  },
+  "details": {
+    "selection": "highest validation Macro-F1; ties prefer lower C",
+    "fit_scope": "NYT train only",
+    "vocabulary_size": 64285,
+    "C_candidates": [
+      {
+        "C": 0.1,
+        "validation_macro_f1": 0.8883860179150515,
+        "iterations": 25
+      },
+      {
+        "C": 1.0,
+        "validation_macro_f1": 0.9591852096428107,
+        "iterations": 40
+      },
+      {
+        "C": 10.0,
+        "validation_macro_f1": 0.9639496659251933,
+        "iterations": 33
+      }
+    ],
+    "selected_C": 10.0,
+    "seconds": 7.500153100001626
+  },
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.2.6",
+      "pandas": "2.2.3",
+      "scikit-learn": "1.6.1",
+      "gensim": "4.4.0",
+      "torch": "2.6.0+cu124",
+      "transformers": "4.51.3"
+    }
+  }
+}

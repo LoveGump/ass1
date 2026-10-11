@@ -1,0 +1,188 @@
+{
+  "method": "w2v_nyt",
+  "seed": 42,
+  "labels": [
+    "business",
+    "politics",
+    "sports"
+  ],
+  "source_sha256": "de12ebe7f41316b798896bf975da840e2998f82393328d375fe5456a14e9eb2d",
+  "split_sha256": "1262ec2c68c75e17185930e0b8ee92d5521212dc2e804f460eb9d33312dc1dc4",
+  "validation": {
+    "accuracy": 0.984375,
+    "macro_f1": 0.9632233230166,
+    "classification_report": {
+      "business": {
+        "precision": 0.9637681159420289,
+        "recall": 0.9300699300699301,
+        "f1-score": 0.9466192170818505,
+        "support": 143.0
+      },
+      "politics": {
+        "precision": 0.9271523178807947,
+        "recall": 0.9655172413793104,
+        "f1-score": 0.9459459459459459,
+        "support": 145.0
+      },
+      "sports": {
+        "precision": 0.9976825028968713,
+        "recall": 0.9965277777777778,
+        "f1-score": 0.9971048060220035,
+        "support": 864.0
+      },
+      "accuracy": 0.984375,
+      "macro avg": {
+        "precision": 0.9628676455732316,
+        "recall": 0.9640383164090061,
+        "f1-score": 0.9632233230166,
+        "support": 1152.0
+      },
+      "weighted avg": {
+        "precision": 0.9845951468535783,
+        "recall": 0.984375,
+        "f1-score": 0.9843986654582272,
+        "support": 1152.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        133,
+        9,
+        1
+      ],
+      [
+        4,
+        140,
+        1
+      ],
+      [
+        1,
+        2,
+        861
+      ]
+    ]
+  },
+  "test": {
+    "accuracy": 0.9895833333333334,
+    "macro_f1": 0.9731424794005026,
+    "classification_report": {
+      "business": {
+        "precision": 0.9517241379310345,
+        "recall": 0.965034965034965,
+        "f1-score": 0.9583333333333334,
+        "support": 143.0
+      },
+      "politics": {
+        "precision": 0.971830985915493,
+        "recall": 0.9517241379310345,
+        "f1-score": 0.9616724738675958,
+        "support": 145.0
+      },
+      "sports": {
+        "precision": 0.9988439306358381,
+        "recall": 1.0,
+        "f1-score": 0.9994216310005783,
+        "support": 864.0
+      },
+      "accuracy": 0.9895833333333334,
+      "macro avg": {
+        "precision": 0.9741330181607886,
+        "recall": 0.9722530343219998,
+        "f1-score": 0.9731424794005026,
+        "support": 1152.0
+      },
+      "weighted avg": {
+        "precision": 0.989594792318792,
+        "recall": 0.9895833333333334,
+        "f1-score": 0.9895698477100415,
+        "support": 1152.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        138,
+        4,
+        1
+      ],
+      [
+        7,
+        138,
+        0
+      ],
+      [
+        0,
+        0,
+        864
+      ]
+    ]
+  },
+  "details": {
+    "selection": "highest validation Macro-F1; ties prefer lower C",
+    "fit_scope": "NYT train only",
+    "embedding_source": "NYT train",
+    "embedding_vocabulary": 28463,
+    "word2vec": {
+      "vector_size": 100,
+      "window": 5,
+      "min_count": 5,
+      "sg": 1,
+      "negative": 5,
+      "epochs": 10,
+      "workers": 1,
+      "seed": 42
+    },
+    "corpus_documents": 9215,
+    "coverage": {
+      "train": {
+        "tokens": 5887071,
+        "covered_tokens": 5822990,
+        "coverage": 0.9891149605635807,
+        "empty_documents": 0
+      },
+      "validation": {
+        "tokens": 732481,
+        "covered_tokens": 721137,
+        "coverage": 0.9845129088672607,
+        "empty_documents": 0
+      },
+      "test": {
+        "tokens": 751971,
+        "covered_tokens": 740754,
+        "coverage": 0.9850832013468604,
+        "empty_documents": 0
+      }
+    },
+    "dimensions": 100,
+    "C_candidates": [
+      {
+        "C": 0.1,
+        "validation_macro_f1": 0.9559496153894531,
+        "iterations": 45
+      },
+      {
+        "C": 1.0,
+        "validation_macro_f1": 0.9632233230166,
+        "iterations": 74
+      },
+      {
+        "C": 10.0,
+        "validation_macro_f1": 0.962227562361971,
+        "iterations": 112
+      }
+    ],
+    "selected_C": 1.0,
+    "seconds": 224.34279940000124
+  },
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.2.6",
+      "pandas": "2.2.3",
+      "scikit-learn": "1.6.1",
+      "gensim": "4.4.0",
+      "torch": "2.6.0+cu124",
+      "transformers": "4.51.3"
+    }
+  }
+}

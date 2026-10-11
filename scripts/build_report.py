@@ -91,7 +91,7 @@ def main():
     ax.invert_yaxis()
     ax.set_xlim(0, 108)
     ax.set_xlabel("NYT test score (%)")
-    ax.legend(loc="lower left", ncol=2)
+    ax.legend(loc="lower left", bbox_to_anchor=(0, 1), ncol=2, frameon=False)
     fig1.tight_layout()
     fig1.savefig(FIGS / "comparison.png", dpi=180)
     plt.close(fig1)

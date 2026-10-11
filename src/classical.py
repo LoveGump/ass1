@@ -3,7 +3,6 @@ import argparse
 import gzip
 import json
 import time
-import zlib
 from pathlib import Path
 
 import joblib
@@ -17,7 +16,7 @@ from sklearn.metrics import f1_score
 from sklearn.preprocessing import StandardScaler
 from threadpoolctl import threadpool_limits
 
-from .common import ARTIFACTS, ROOT, SEED, load_data, save_result, sha256, tokenize
+from .common import ARTIFACTS, ROOT, SEED, load_data, save_result, sha256, tokenize, stable_hash
 
 
 class EpochProgress(CallbackAny2Vec):
@@ -27,10 +26,6 @@ class EpochProgress(CallbackAny2Vec):
     def on_epoch_end(self, model):
         self.epoch += 1
         print(f"{self.name}: epoch {self.epoch}/10 complete", flush=True)
-
-
-def stable_hash(value):
-    return zlib.crc32(value.encode("utf-8"))
 
 
 def vectorizer(method):
